@@ -1,0 +1,59 @@
+{
+  "pages": [
+    {
+      "path": "pages/home/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "手账",
+        "backgroundColor": "#E8E4DC",
+        "backgroundColorTop": "#E8E4DC",
+        "backgroundColorBottom": "#E8E4DC"
+      }
+    },
+    {
+      "path": "pages/todos/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "待办",
+        "backgroundColor": "#E8E4DC",
+        "backgroundColorTop": "#E8E4DC",
+        "backgroundColorBottom": "#E8E4DC"
+      }
+    },
+    {
+      "path": "pages/stats/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "足迹",
+        "backgroundColor": "#E8E4DC",
+        "backgroundColorTop": "#E8E4DC",
+        "backgroundColorBottom": "#E8E4DC"
+      }
+    },
+    {
+      "path": "pages/breathe/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "吐纳",
+        "backgroundColor": "#E8E4DC",
+        "backgroundColorTop": "#E8E4DC",
+        "backgroundColorBottom": "#E8E4DC"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationStyle": "custom",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "心流手账",
+    "backgroundColor": "#E8E4DC",
+    "backgroundColorTop": "#E8E4DC",
+    "backgroundColorBottom": "#E8E4DC",
+    "pageOrientation": "portrait"
+  },
+  "easycom": {
+    "autoscan": true,
+    "custom": {
+      "^B-(.*)": "@/components/$1.vue"
+    }
+  }
+}
