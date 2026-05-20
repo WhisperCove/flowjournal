@@ -22,7 +22,6 @@ const particleCanvasRef = ref(null)
 
 // 全局翻页方向
 uni.$flipDirection = null
-uni.$pageOrder = ['home', 'stats', 'breathe']
 
 // 全局情绪状态
 uni.$appState = {

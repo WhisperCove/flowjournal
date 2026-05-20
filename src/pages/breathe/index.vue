@@ -1,5 +1,5 @@
 <template>
-  <view class="page-container">
+  <view class="page-container" @touchstart="swipe.onTouchStart" @touchend="swipe.onTouchEnd">
     <view class="book-stage">
       <view class="book">
         <!-- 书壳 -->
@@ -10,7 +10,7 @@
           ref="bookPageRef"
           :direction="pageDirection"
           headerLeft="呼吸"
-          headerRight="III"
+          headerRight="IV"
         >
           <!-- 居中布局 -->
           <view class="breathe-page-content">
@@ -29,16 +29,15 @@
 
             <!-- 提示文字 -->
             <view class="breathe-hint ink-in" style="animation-delay: 0.3s">
-              <text>四秒吸气 · 四秒屏息 · 四秒呼气</text>
-              <text>粒子随你一同涨落</text>
+              <text>吾心安谧</text>
+              <text>暮云晓月，方觉晚秋...</text>
             </view>
           </view>
         </BookPage>
-
-        <!-- 底部导航 -->
-        <NavSpine :current="'breathe'" />
       </view>
     </view>
+
+    <NavSpine :current="'breathe'" />
   </view>
 </template>
 
@@ -48,6 +47,9 @@ import { onShow, onHide } from '@dcloudio/uni-app'
 import BookPage from '@/components/BookPage.vue'
 import NavSpine from '@/components/NavSpine.vue'
 import BreathOrb from '@/components/BreathOrb.vue'
+import { useSwipeNav } from '@/utils/swipeNav.js'
+
+const swipe = useSwipeNav('breathe')
 
 // ========== 状态 ==========
 const pageDirection = ref(uni.$flipDirection || null)

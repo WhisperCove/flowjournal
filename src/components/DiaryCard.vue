@@ -1,7 +1,7 @@
 <template>
   <view
     class="diary-entry"
-    :class="{ 'stamp-in': isNew, dimmed: dimmed, deleting: deleting }"
+    :class="{ 'stamp-in': isNew, archived: archived, deleting: deleting }"
     :style="entryStyle"
     @touchstart="onStart"
     @touchmove="onMove"
@@ -9,15 +9,21 @@
     @mousedown="onStart"
     @mousemove="onMove"
     @mouseup="onEnd"
-    @mouseleave="onEnd"
   >
-    <!-- 滑动时露出的删除按钮 -->
-    <view class="swipe-reveal" :style="{ opacity: revealOpacity }">
-      <view class="del-btn" @tap.stop="confirmDelete">删除</view>
+    <!-- 右滑：归档提示 -->
+    <view class="swipe-label swipe-archive" :style="{ opacity: archiveOpacity }">归档</view>
+
+    <!-- 再右滑：删除提示 -->
+    <view class="swipe-label swipe-delete" :style="{ opacity: deleteOpacity }">
+      删除
     </view>
 
-    <!-- 卡片主体 -->
-    <view class="card-body" :style="{ transform: 'translateX(' + swipeX + 'px)' }">
+    <!-- 左滑：恢复提示 -->
+    <view class="swipe-label swipe-restore" :style="{ opacity: restoreOpacity }" v-if="archived">恢复</view>
+
+    <!-- 卡片体 -->
+    <view class="card-inner" :style="{ transform: 'translateX(' + swipeX + 'px)' }"
+      :class="{ dimmed: archived }">
       <view class="entry-tape"></view>
       <view class="entry-date">
         <text>{{ diary.fullDate || diary.date }}</text>
@@ -37,56 +43,72 @@ const props = defineProps({
   isNew: { type: Boolean, default: false }
 })
 
-const emit = defineEmits(['delete', 'tap'])
+const emit = defineEmits(['delete', 'tap-card'])
 
 // 状态
-const dimmed = ref(false)       // 变灰
-const deleting = ref(false)     // 删除动画中
-const swipeX = ref(0)           // 滑动偏移
-const revealOpacity = ref(0)    // 删除按钮透明度
-const hovered = ref(false)      // 是否悬停（露按钮状态）
+const archived = ref(false)
+const deleting = ref(false)
+const swipeX = ref(0)
 
-let startX = 0, deltaX = 0, isDragging = false
-const THRESH = 70, MAX = 110
+// 计算提示透明度
+const archiveOpacity = computed(() => {
+  if (archived.value) return 0
+  return swipeX.value > 0 ? Math.min(1, Math.max(0, (swipeX.value - 30) / 50)) : 0
+})
+const deleteOpacity = computed(() => {
+  if (!archived.value) return 0
+  return swipeX.value > 0 ? Math.min(1, Math.max(0, (swipeX.value - 30) / 50)) : 0
+})
+const restoreOpacity = computed(() => {
+  if (!archived.value) return 0
+  return swipeX.value < 0 ? Math.min(1, Math.abs(swipeX.value) / 50) : 0
+})
 
-function getX(e) {
+// 滑动变量
+let startX = 0, deltaX = 0, dragging = false, processed = false
+const THRESH_ARCHIVE = 30, THRESH_DELETE = 50, MAX = 120
+
+function gx(e) {
   const t = e.changedTouches?.[0] || e.touches?.[0]
   return t ? t.clientX : (e.clientX || 0)
 }
-function onStart(e) { startX = getX(e); deltaX = 0; isDragging = false }
+function onStart(e) { startX = gx(e); deltaX = 0; dragging = false; processed = false }
 function onMove(e) {
-  if (hovered.value) return  // 已悬停，不再滑动
-  const dx = getX(e) - startX
-  if (!isDragging && Math.abs(dx) < 6) return
-  isDragging = true; deltaX = dx
-  const max = Math.min(MAX, dx)
-  swipeX.value = Math.max(0, max)  // 只允许右滑
-  revealOpacity.value = Math.min(1, Math.abs(dx) / THRESH)
+  const dx = gx(e) - startX
+  if (!dragging && Math.abs(dx) < 6) return
+  dragging = true; deltaX = dx
+  if (!archived.value) { swipeX.value = Math.max(0, Math.min(MAX, dx)) }
+  else { swipeX.value = Math.max(-MAX, Math.min(MAX, dx)) }
 }
 function onEnd() {
-  if (hovered.value) return
-  if (!isDragging) { emit('tap', props.diary); return }
-  if (deltaX > THRESH) {
-    // 悬停：露按钮
-    hovered.value = true
-    dimmed.value = true
-    swipeX.value = MAX
-    revealOpacity.value = 1
+  if (processed) return
+  processed = true
+  if (!dragging) { emit('tap-card', props.diary); return }
+  if (!archived.value) {
+    // 第一次右滑
+    if (deltaX > THRESH_ARCHIVE) {
+      archived.value = true
+      swipeX.value = 0
+      try { uni.vibrateShort({ type: 'light' }) } catch (e) { /**/ }
+    } else { swipeX.value = 0 }
   } else {
-    swipeX.value = 0
-    revealOpacity.value = 0
+    if (deltaX > THRESH_DELETE) {
+      // 第二次右滑 → 删除
+      deleting.value = true
+      try { uni.vibrateShort({ type: 'heavy' }) } catch (e) { /**/ }
+      setTimeout(() => emit('delete', props.diary), 500)
+    } else if (deltaX < -THRESH_ARCHIVE) {
+      // 左滑 → 恢复
+      archived.value = false
+      swipeX.value = 0
+      try { uni.vibrateShort({ type: 'light' }) } catch (e) { /**/ }
+    } else {
+      swipeX.value = 0
+    }
   }
+  dragging = false
 }
 
-function confirmDelete() {
-  deleting.value = true
-  try { uni.vibrateShort({ type: 'heavy' }) } catch (e) { /**/ }
-  setTimeout(() => {
-    emit('delete', props.diary)
-  }, 500)
-}
-
-// 随机旋转
 const entryStyle = computed(() => {
   const seed = ((props.diary.id || props.index) * 7 + 13) % 31
   const deg = (seed - 15) / 10
@@ -96,47 +118,36 @@ const entryStyle = computed(() => {
 
 <style lang="scss" scoped>
 .diary-entry {
-  position: relative;
-  margin-bottom: 20px;
-  border-radius: 2px;
-  user-select: none;
-  overflow: hidden;
+  position: relative; margin-bottom: 20px; border-radius: 2px;
+  user-select: none; overflow: hidden;
 
-  &.dimmed {
-    opacity: .5;
-    .card-body { filter: grayscale(.6); }
-  }
-
-  &.deleting {
-    animation: whoosh 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
-  }
+  &.archived { opacity: .45; .card-inner { filter: grayscale(.5); } }
+  &.deleting { animation: paperRoll 0.5s cubic-bezier(.55,.055,.675,.19) forwards; }
 }
-
-@keyframes whoosh {
+@keyframes paperRoll {
   0%   { transform: scale(1) rotate(0deg); opacity: 1; }
-  100% { transform: scale(0.85) translateX(60px); opacity: 0; }
+  50%  { transform: scale(.9) rotate(-5deg); opacity: .5; }
+  100% { transform: scale(0) rotate(-15deg); opacity: 0; }
 }
 
-/* 滑动露出的删除按钮 */
-.swipe-reveal {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: flex-end;
-  padding-right: 8px; z-index: 1;
+/* 滑动提示文字 */
+.swipe-label {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  font-size: 13px; font-weight: 600; letter-spacing: 2px;
+  z-index: 1; pointer-events: none;
 }
-.del-btn {
-  background: rgba(180,100,100,.85); color: #FFF;
-  padding: 8px 20px; border-radius: 16px;
-  font-size: 13px; letter-spacing: 1px;
-  cursor: pointer; z-index: 10;
-}
+.swipe-archive { left: 16px; color: rgba(139,115,85,.5); }
+.swipe-delete  { right: 16px; color: rgba(180,100,100,.5); }
+.swipe-restore { left: 16px; color: rgba(139,180,139,.6); }
 
-/* 卡片主体 */
-.card-body {
+/* 卡片体 */
+.card-inner {
   position: relative; z-index: 2;
   background: #FFFEF9; padding: 24px;
-  box-shadow: 0 1px 3px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.02), inset 0 0 0 1px rgba(0,0,0,.02);
+  box-shadow: 0 1px 3px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.02),
+    inset 0 0 0 1px rgba(0,0,0,.02);
   border-radius: 2px;
-  transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
+  transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), filter 0.3s ease;
   cursor: pointer;
 
   &:nth-child(odd)  { background: #FFFEFA; }
@@ -148,8 +159,7 @@ const entryStyle = computed(() => {
   transform: translateX(-50%) rotate(-2deg);
   width: 48px; height: 18px;
   background: linear-gradient(180deg, rgba(212,200,170,.55) 0%, rgba(212,200,170,.25) 40%, rgba(212,200,170,.45) 100%);
-  border-radius: 2px; box-shadow: 0 1px 1px rgba(0,0,0,.08);
-  z-index: 3;
+  border-radius: 2px; box-shadow: 0 1px 1px rgba(0,0,0,.08); z-index: 3;
 }
 .entry-date {
   font-family: 'Noto Serif SC','Songti SC','STSong',serif;
@@ -165,9 +175,7 @@ const entryStyle = computed(() => {
   font-size: 18px; opacity: .4;
 }
 
-.stamp-in {
-  animation: stamp 0.5s cubic-bezier(0.22,1,0.36,1) forwards;
-}
+.stamp-in { animation: stamp 0.5s cubic-bezier(0.22,1,0.36,1) forwards; }
 @keyframes stamp {
   0%   { transform: scale(1.6) rotate(-12deg); opacity: 0; }
   60%  { transform: scale(.95) rotate(-1deg); opacity: 1; }

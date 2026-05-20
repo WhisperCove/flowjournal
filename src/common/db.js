@@ -35,18 +35,36 @@ class FlowDB {
   _initAppPlus(resolve, reject) {
     try {
       if (!plus || !plus.sqlite) throw new Error('plus.sqlite not available')
+
+      // 先检查是否已打开
+      if (plus.sqlite.isOpenDatabase({ name: DB_NAME })) {
+        console.log('[FlowDB] 数据库已打开，跳过')
+        this._createTables().then(() => {
+          this.isReady = true; resolve()
+        }).catch(reject)
+        return
+      }
+
       plus.sqlite.openDatabase({
         name: DB_NAME,
         path: '_doc/flowjournal.db',
         success: () => {
           this._createTables().then(() => {
-            this.isReady = true
-            resolve()
+            this.isReady = true; resolve()
           }).catch(reject)
         },
         fail: (err) => {
-          console.error('[FlowDB] 打开数据库失败:', JSON.stringify(err))
-          this._fallbackToMem(resolve)
+          const msg = typeof err === 'object' ? JSON.stringify(err) : String(err)
+          // -1402 = Same Name Already Open 视为已打开成功
+          if (msg.indexOf('-1402') !== -1 || msg.indexOf('Same Name') !== -1) {
+            console.log('[FlowDB] 数据库已存在，继续使用')
+            this._createTables().then(() => {
+              this.isReady = true; resolve()
+            }).catch(reject)
+          } else {
+            console.error('[FlowDB] 打开数据库失败:', msg)
+            this._fallbackToMem(resolve)
+          }
         }
       })
     } catch (e) {
@@ -75,10 +93,23 @@ class FlowDB {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         text TEXT NOT NULL,
         completed INTEGER DEFAULT 0,
+        categoryId TEXT DEFAULT 'default',
+        sortIndex INTEGER DEFAULT 0,
         createdAt INTEGER
       )`
     ]
-    return this._exec(sql)
+    return this._exec(sql).then(() => this._migrate())
+  }
+
+  // 迁移：兼容旧表（无 categoryId 时补充）
+  _migrate() {
+    // categoryId
+    try {
+      plus.sqlite.executeSql({ name: DB_NAME, sql: "ALTER TABLE todos ADD COLUMN categoryId TEXT DEFAULT 'default'", success: () => {}, fail: () => {} })
+    } catch (e) { /* 已存在 */ }
+    try {
+      plus.sqlite.executeSql({ name: DB_NAME, sql: "ALTER TABLE todos ADD COLUMN sortIndex INTEGER DEFAULT 0", success: () => {}, fail: () => {} })
+    } catch (e) { /* 已存在 */ }
   }
 
   _exec(sql) {
@@ -117,7 +148,7 @@ class FlowDB {
     const store = this._mem[type]
     if (!store) return null
     const id = type === 'diaries' ? ++this._mem.diaryId : ++this._mem.todoId
-    store.push({ id, ...data })
+    store.push({ ...data, id })  // 新 id 覆盖旧数据中的 id
     return id
   }
 
@@ -186,6 +217,16 @@ class FlowDB {
     // #endif
   }
 
+  async updateDiary(id, text) {
+    if (this._useMem) { this._memUpdate('diaries', id, d => { d.text = text }); return }
+    // #ifdef APP-PLUS
+    await this._exec(`UPDATE diaries SET text = '${this._esc(text)}' WHERE id = ${Number(id)}`)
+    // #endif
+    // #ifndef APP-PLUS
+    this._memUpdate('diaries', id, d => { d.text = text })
+    // #endif
+  }
+
   async getTodos() {
     if (this._useMem) return this._memGetAll('todos')
     // #ifdef APP-PLUS
@@ -197,18 +238,22 @@ class FlowDB {
     // #endif
   }
 
-  async addTodo(text) {
+  async addTodo(text, categoryId) {
     const createdAt = Date.now()
-    if (this._useMem) return this._memAdd('todos', { text, completed: false, createdAt }) && { id: this._mem.todoId, text, completed: false, createdAt }
+    const catId = categoryId || 'default'
+    if (this._useMem) {
+      const id = this._memAdd('todos', { text, completed: false, categoryId: catId, createdAt })
+      return { id, text, completed: false, categoryId: catId, createdAt }
+    }
     // #ifdef APP-PLUS
-    await this._exec(`INSERT INTO todos (text, completed, createdAt) VALUES ('${this._esc(text)}', 0, ${createdAt})`)
+    await this._exec(`INSERT INTO todos (text, completed, categoryId, createdAt) VALUES ('${this._esc(text)}', 0, '${this._esc(catId)}', ${createdAt})`)
     const rows = await this._query('SELECT last_insert_rowid() as id')
     const id = rows?.[0]?.id ?? null
-    return { id, text, completed: false, createdAt }
+    return { id, text, completed: false, categoryId: catId, createdAt }
     // #endif
     // #ifndef APP-PLUS
-    const todo = this._memAdd('todos', { text, completed: false, createdAt })
-    return { id: todo, text, completed: false, createdAt }
+    const todo = this._memAdd('todos', { text, completed: false, categoryId: catId, createdAt })
+    return { id: todo, text, completed: false, categoryId: catId, createdAt }
     // #endif
   }
 
@@ -220,6 +265,21 @@ class FlowDB {
     // #ifndef APP-PLUS
     this._memUpdate('todos', id, t => { t.completed = completed })
     // #endif
+  }
+
+  async updateTodoText(id, text) {
+    if (this._useMem) { this._memUpdate('todos', id, t => { t.text = text }); return }
+    // #ifdef APP-PLUS
+    await this._exec(`UPDATE todos SET text = '${this._esc(text)}' WHERE id = ${Number(id)}`)
+    // #endif
+    // #ifndef APP-PLUS
+    this._memUpdate('todos', id, t => { t.text = text })
+    // #endif
+  }
+
+  async getTodosByCategory(categoryId) {
+    const all = await this.getTodos()
+    return all.filter(t => (t.categoryId || 'default') === categoryId)
   }
 
   async deleteTodo(id) {

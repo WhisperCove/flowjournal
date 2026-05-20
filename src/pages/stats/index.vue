@@ -1,5 +1,5 @@
 <template>
-  <view class="page-container">
+  <view class="page-container" @touchstart="swipe.onTouchStart" @touchend="swipe.onTouchEnd">
     <view class="book-stage">
       <view class="book">
         <!-- 书壳 -->
@@ -46,11 +46,10 @@
             <text class="quote-line">而是在心中修篱种菊。"</text>
           </view>
         </BookPage>
-
-        <!-- 底部导航 -->
-        <NavSpine :current="'stats'" />
       </view>
     </view>
+
+    <NavSpine :current="'stats'" />
   </view>
 </template>
 
@@ -59,6 +58,9 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { onShow } from '@dcloudio/uni-app'
 import BookPage from '@/components/BookPage.vue'
 import NavSpine from '@/components/NavSpine.vue'
+import { useSwipeNav } from '@/utils/swipeNav.js'
+
+const swipe = useSwipeNav('stats')
 
 // ========== 状态 ==========
 const pageDirection = ref(uni.$flipDirection || null)
