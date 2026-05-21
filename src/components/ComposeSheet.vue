@@ -133,11 +133,11 @@ defineExpose({ open, close })
 <style lang="scss" scoped>
 /* 遮罩层 */
 .compose-overlay {
-  position: fixed;
+  position: absolute;
   inset: 0;
   background: rgba(232, 228, 220, 0.8);
   backdrop-filter: blur(4px);
-  z-index: 200;
+  z-index: 1100;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.5s ease;
@@ -150,16 +150,16 @@ defineExpose({ open, close })
 
 /* 撰写弹窗主体 */
 .compose-sheet {
-  position: fixed;
+  position: absolute;
   bottom: 0;
   left: 50%;
   transform: translateX(-50%) translateY(100%);
   width: 100%;
   max-width: 480px;
-  height: 80vh;
+  height: 60vh;
   background: #FFFEF9;
   border-radius: 24px 24px 0 0;
-  z-index: 201;
+  z-index: 1101;
   transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.08);
   display: flex;

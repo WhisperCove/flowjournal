@@ -18,10 +18,10 @@
 const props = defineProps({ current: { type: String, default: 'home' } })
 
 const tabs = [
-  { id: 'home',   icon: '/static/tabbar/手账.png',  icon2: '/static/tabbar/手账2.png',  label: '手账', route: '/pages/home/index' },
-  { id: 'todos',  icon: '/static/tabbar/待办.png',  icon2: '/static/tabbar/待办2.png',  label: '待办', route: '/pages/todos/index' },
-  { id: 'stats',  icon: '/static/tabbar/足迹.png',  icon2: '/static/tabbar/足迹2.png',  label: '足迹', route: '/pages/stats/index' },
-  { id: 'breathe',icon: '/static/tabbar/冥想.png',  icon2: '/static/tabbar/冥想2.png',  label: '吐纳', route: '/pages/breathe/index' }
+  { id: 'home',   icon: '/static/tabbar/handbook.png',  icon2: '/static/tabbar/handbook2.png',  label: '手账', route: '/pages/home/index' },
+  { id: 'todos',  icon: '/static/tabbar/todo.png',      icon2: '/static/tabbar/todo2.png',      label: '待办', route: '/pages/todos/index' },
+  { id: 'stats',  icon: '/static/tabbar/stats.png',     icon2: '/static/tabbar/stats2.png',     label: '足迹', route: '/pages/stats/index' },
+  { id: 'breathe',icon: '/static/tabbar/breathe.png',   icon2: '/static/tabbar/breathe2.png',   label: '吐纳', route: '/pages/breathe/index' }
 ]
 
 let lock = false
