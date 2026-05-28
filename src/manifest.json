@@ -2,8 +2,8 @@
     "name" : "心流手账",
     "appid" : "__UNI__36113D7",
     "description" : "FlowJournal - 记录流动的思绪",
-    "versionName" : "1.0.0",
-    "versionCode" : "100",
+    "versionName" : "1.1.10086",
+    "versionCode" : 10086,
     "transformPx" : false,
     "app-plus" : {
         "usingComponents" : true,
@@ -11,7 +11,7 @@
         "compilerVersion" : 3,
         "splashscreen" : {
             "alwaysShowBeforeRender" : true,
-            "waiting" : true,
+            "waiting" : false,
             "autoclose" : true,
             "delay" : 0
         },
@@ -56,6 +56,14 @@
                         "spotlight@2x" : "unpackage/res/icons/80x80.png",
                         "spotlight@3x" : "unpackage/res/icons/120x120.png"
                     }
+                }
+            },
+            "splashscreen" : {
+                "androidStyle" : "default",
+                "android" : {
+                    "hdpi" : "",
+                    "xhdpi" : "",
+                    "xxhdpi" : "F:/Desktop/【哲风壁纸】夏天森林-大树仰拍（high）.png"
                 }
             }
         }

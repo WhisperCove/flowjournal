@@ -10,7 +10,7 @@
           ref="bookPageRef"
           :direction="pageDirection"
           headerLeft="统计"
-          headerRight="II"
+          headerRight="III"
         >
           <!-- 章节标题 -->
           <h1 class="chapter-title ink-in">数字足迹</h1>
