@@ -1,4 +1,4 @@
-# 📖 FlowJournal 心流手账
+# FlowJournal 心流手账
 
 > 一本流动的手账，记录思绪的涟漪。离线优先，纸墨质感。
 
@@ -6,24 +6,43 @@
 
 ---
 
-## ✨ 功能亮点
+## 项目展示
 
-| 功能 | 说明 |
-|------|------|
-| 📝 **日记书写** | 底部抽屉式 ComposeSheet 快速记事，支持情绪标签选择 |
-| 👆 **滑动交互** | 左滑归档（30% 阈值）→ 继续左滑删除（50% 阈值），操作直觉化 |
-| ✅ **待办管理** | 动态分组、进度环、批量切换、DONE 印章动画 |
-| 📊 **数据足迹** | 统计页数字滚动动画，记录连续书写天数 |
-| 🫁 **呼吸练习** | 12 秒吐纳周期（4s 吸 / 4s 屏 / 4s 呼），60 粒子画布联动 |
-| 🎨 **全局粒子** | BreathParticle + DustParticle 双层粒子系统，覆盖所有页面 |
-| 😊 **情绪书签** | 侧边栏五种情绪标签（🍃🌙⭐💧☀️），一键标记当日心境 |
-| 📱 **自定义导航** | NavSpine 替代原生 tabBar，书签式标签栏 + 英文图标文件名 |
-| 🔄 **3D 翻页** | CSS @keyframes 翻页动画（flipInNext / flipInPrev，1.0s），模拟实体书翻页 |
-| 💾 **离线存储** | App 端 plus.sqlite 持久化 / H5 端内存降级，零网络依赖 |
+### 手账页面
+![手账页面](show_image/手账页面.jpg)
+
+### 待办清单
+![待办清单](show_image/待办清单.jpg)
+
+### 手账卡片详情页
+![手账卡片详情页](show_image/手账卡片详情页.jpg)
+
+### 记录页面
+![记录页面](show_image/记录页面.jpg)
+
+### 吐息页面
+![吐息页面](show_image/吐息页面.jpg)
 
 ---
 
-## 🏗️ 项目结构
+## 功能亮点
+
+| 功能模块 | 功能说明 |
+|----------|----------|
+| **日记书写** | 底部抽屉式 ComposeSheet 快速记事，支持情绪标签选择 |
+| **滑动交互** | 左滑归档（30% 阈值）→ 继续左滑删除（50% 阈值），操作直觉化 |
+| **待办管理** | 动态分组、进度环、批量切换、DONE 印章动画 |
+| **数据足迹** | 统计页数字滚动动画，记录连续书写天数 |
+| **呼吸练习** | 12 秒吐纳周期（4s 吸 / 4s 屏 / 4s 呼），60 粒子画布联动 |
+| **全局粒子** | BreathParticle + DustParticle 双层粒子系统，覆盖所有页面 |
+| **情绪书签** | 侧边栏五种情绪标签，一键标记当日心境 |
+| **自定义导航** | NavSpine 替代原生 tabBar，书签式标签栏 + 英文图标文件名 |
+| **3D 翻页** | CSS @keyframes 翻页动画（flipInNext / flipInPrev，1.0s），模拟实体书翻页 |
+| **离线存储** | App 端 plus.sqlite 持久化 / H5 端内存降级，零网络依赖 |
+
+---
+
+## 项目结构
 
 ```
 flowjournal/
@@ -62,6 +81,7 @@ flowjournal/
 │       ├── label/                 # 情绪图标（leaves/moon/star/sun/water_drop .png）
 │       └── tabbar/                # 导航图标（8 个：handbook/todo/stats/breathe + active）
 │
+├── show_image/                    # 项目展示截图
 ├── package.json
 ├── vite.config.js
 └── index.html
@@ -69,7 +89,7 @@ flowjournal/
 
 ---
 
-## 🚀 快速开始
+## 快速开始
 
 ### 环境要求
 
@@ -112,7 +132,7 @@ npm run build:mp-weixin
 
 ---
 
-## 🛠️ 技术栈
+## 技术栈
 
 | 分类 | 技术 | 版本 |
 |------|------|------|
@@ -126,7 +146,7 @@ npm run build:mp-weixin
 
 ---
 
-## 🎨 设计语言
+## 设计语言
 
 FlowJournal 追求"纸墨温度"，视觉风格介于实体手账与数字界面之间：
 
@@ -141,7 +161,8 @@ FlowJournal 追求"纸墨温度"，视觉风格介于实体手账与数字界面
 | 阴影 | 多层扩散阴影，模拟纸张叠放 |
 | 动效 | 3D 翻页 + 墨滴粒子 + 呼吸脉动 |
 
-设计原则：
+### 设计原则
+
 - **手绘感**：图标与装饰元素避免硬边几何，保留手作温度
 - **留白**：大量呼吸空间，不让信息压迫视线
 - **层次**：书壳 → 书页 → 卡片三层视觉纵深
@@ -149,14 +170,14 @@ FlowJournal 追求"纸墨温度"，视觉风格介于实体手账与数字界面
 
 ---
 
-## 📱 平台兼容
+## 平台兼容
 
 | 平台 | 状态 | 存储方案 | 备注 |
 |------|------|----------|------|
-| H5（浏览器） | ✅ 完整支持 | 内存存储（刷新丢失） | 开发调试首选 |
-| App（Android） | ✅ 完整支持 | plus.sqlite 持久化 | 推荐发布平台 |
-| App（iOS） | ✅ 完整支持 | plus.sqlite 持久化 | 需 Xcode 签名 |
-| 微信小程序 | ⚠️ 基础支持 | 内存存储 | 部分 API 受限 |
+| H5（浏览器） | 完整支持 | 内存存储（刷新丢失） | 开发调试首选 |
+| App（Android） | 完整支持 | plus.sqlite 持久化 | 推荐发布平台 |
+| App（iOS） | 完整支持 | plus.sqlite 持久化 | 需 Xcode 签名 |
+| 微信小程序 | 基础支持 | 内存存储 | 部分 API 受限 |
 
 ### 平台适配注意事项
 
@@ -167,10 +188,109 @@ FlowJournal 追求"纸墨温度"，视觉风格介于实体手账与数字界面
 
 ---
 
-## 📄 License
+## 数据库架构
+
+FlowJournal 采用双存储策略，确保跨平台数据一致性：
+
+### App 端（plus.sqlite）
+
+```sql
+-- 日记表
+CREATE TABLE IF NOT EXISTS diaries (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  text TEXT NOT NULL,
+  mood TEXT DEFAULT '🍃',
+  date TEXT,
+  fullDate TEXT,
+  timestamp INTEGER
+);
+
+-- 待办表
+CREATE TABLE IF NOT EXISTS todos (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  text TEXT NOT NULL,
+  completed INTEGER DEFAULT 0,
+  categoryId TEXT DEFAULT 'default',
+  sortIndex INTEGER DEFAULT 0,
+  createdAt INTEGER
+);
+```
+
+### H5 端（内存存储）
+
+当 plus.sqlite 不可用时，自动降级为内存存储，保证功能完整性。
+
+---
+
+## 组件架构
+
+### 核心组件
+
+| 组件 | 职责 | 关键特性 |
+|------|------|----------|
+| `BookPage.vue` | 书页容器 | 翻页动画、页眉页脚、书壳背景 |
+| `DiaryCard.vue` | 日记卡片 | 滑动归档/删除、情绪标签、日期显示 |
+| `ComposeSheet.vue` | 书写面板 | 底部抽屉式、情绪选择、墨滴粒子 |
+| `MoodMark.vue` | 情绪书签 | 侧边栏、五种情绪、一键标记 |
+| `ParticleCanvas.vue` | 粒子系统 | 双层粒子、呼吸联动、全局覆盖 |
+| `NavSpine.vue` | 导航组件 | 书签式标签栏、自定义样式 |
+
+### 数据流
+
+```
+用户操作 → ComposeSheet → FlowDB → 页面刷新
+    ↓
+情绪选择 → MoodMark → 全局状态
+    ↓
+粒子触发 → ParticleCanvas → 视觉反馈
+```
+
+---
+
+## 国际化支持
+
+项目集成 vue-i18n，支持多语言切换：
+
+```javascript
+// 语言文件位置
+src/
+├── locales/
+│   ├── zh-CN.json    # 中文
+│   ├── en-US.json    # 英文
+│   └── ja-JP.json    # 日文
+```
+
+---
+
+## 开发指南
+
+### 代码规范
+
+- 使用 Vue 3 Composition API（script setup）
+- 组件命名采用 PascalCase
+- 工具函数采用 camelCase
+- 样式使用 SCSS，遵循 BEM 命名规范
+
+### 调试技巧
+
+1. **H5 调试**：使用浏览器开发者工具
+2. **App 调试**：使用 HBuilderX 真机调试
+3. **粒子系统**：调整 `ParticleCanvas.vue` 中的参数
+4. **翻页动画**：修改 `BookPage.vue` 中的 CSS @keyframes
+
+### 性能优化
+
+- 粒子系统使用 Canvas 2D 渲染
+- 翻页动画使用 CSS transform 硬件加速
+- 数据库操作采用异步 Promise API
+- 图片资源进行压缩优化
+
+---
+
+## 许可证
 
 [MIT](LICENSE) © WhisperCove
 
 ---
 
-> 🍃 *让思绪流动，让记录成为习惯。*
+> *让思绪流动，让记录成为习惯。*
