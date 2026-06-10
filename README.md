@@ -8,20 +8,15 @@
 
 ## 项目展示
 
-### 手账页面
-![手账页面](show_image/手账页面.jpg)
-
-### 待办清单
-![待办清单](show_image/待办清单.jpg)
-
-### 手账卡片详情页
-![手账卡片详情页](show_image/手账卡片详情页.jpg)
-
-### 记录页面
-![记录页面](show_image/记录页面.jpg)
-
-### 吐息页面
-![吐息页面](show_image/吐息页面.jpg)
+<p align="center">
+  <img src="show_image/手账页面.jpg" width="200" alt="手账页面">
+  <img src="show_image/待办清单.jpg" width="200" alt="待办清单">
+  <img src="show_image/手账卡片详情页.jpg" width="200" alt="手账卡片详情页">
+</p>
+<p align="center">
+  <img src="show_image/记录页面.jpg" width="200" alt="记录页面">
+  <img src="show_image/吐息页面.jpg" width="200" alt="吐息页面">
+</p>
 
 ---
 
@@ -142,7 +137,6 @@ npm run build:mp-weixin
 | 构建 | Vite | 5.2.8 |
 | 数据库 | plus.sqlite（App）/ 内存存储（H5） | - |
 | 字体 | Noto Serif SC（思源宋体） | TTF |
-| 国际化 | vue-i18n | 9.x |
 
 ---
 
@@ -243,21 +237,6 @@ CREATE TABLE IF NOT EXISTS todos (
 情绪选择 → MoodMark → 全局状态
     ↓
 粒子触发 → ParticleCanvas → 视觉反馈
-```
-
----
-
-## 国际化支持
-
-项目集成 vue-i18n，支持多语言切换：
-
-```javascript
-// 语言文件位置
-src/
-├── locales/
-│   ├── zh-CN.json    # 中文
-│   ├── en-US.json    # 英文
-│   └── ja-JP.json    # 日文
 ```
 
 ---
