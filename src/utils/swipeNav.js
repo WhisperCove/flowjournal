@@ -9,8 +9,7 @@ export function useSwipeNav(currentPage) {
 
   // 交互元素选择器（匹配所有可交互区域）
   const INTERACTIVE = ['.diary-entry', '.card-inner', '.entry-tape',
-    '.todo-line', '.line-check', '.line-del', '.cat-head',
-    '.strip-body', '.slip-check', '.todo-strip',
+    '.todo-line', '.line-check', '.cat-head',
     '.nav-col', '.tab-col', '.bookmark', '.hd-add',
     '.btn-solid', '.btn-ghost', '.compose-overlay', '.compose-sheet',
     '.detail-overlay', '.detail-sheet', '.ms-input-wrap',

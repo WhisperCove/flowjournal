@@ -277,11 +277,6 @@ class FlowDB {
     // #endif
   }
 
-  async getTodosByCategory(categoryId) {
-    const all = await this.getTodos()
-    return all.filter(t => (t.categoryId || 'default') === categoryId)
-  }
-
   async deleteTodo(id) {
     if (this._useMem) return this._memDelete('todos', id)
     // #ifdef APP-PLUS

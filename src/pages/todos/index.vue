@@ -364,7 +364,6 @@ onShow(() => loadTodos())
 
 .line-text { flex:1; font-size:15px; color:#3E2723; line-height:1.6; padding:10px 0; cursor:text; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .line-input-edit { flex:1; font-size:15px; color:#3E2723; border:none; outline:none; background:rgba(255,255,255,.6); padding:10px 8px; border-radius:4px; border-bottom:1px solid #C4B9A8; line-height:1.6; height:40px; box-sizing:border-box; }
-.line-del { font-size:13px; color:#B0ADA0; padding:4px 6px; flex-shrink:0; }
 .line-done { font-size:12px; color:#6B5B4E; font-weight:500; letter-spacing:3px; opacity:.6; flex-shrink:0; animation:doneIn 0.5s cubic-bezier(.22,1,.36,1) forwards; }
 @keyframes doneIn {
   0%   { opacity:0; transform:scale(1.5) rotate(-8deg); }
